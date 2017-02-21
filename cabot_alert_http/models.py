@@ -8,7 +8,7 @@ from cabot.cabotapp.alert import AlertPlugin
 logger = getLogger(__name__)
 
 # FIXME: Move host and credentials to environment variables (or local settings).
-SUPERSET_URL = 'http://127.0.0.1:8088/api/v1/alerts-consumer'
+SUPERSET_URL = 'http://127.0.0.1:8088/api/v1/alerts'
 SUPERSET_USERNAME = 'user1'
 SUPERSET_PASSWORD = 'secret'
 
@@ -20,11 +20,19 @@ class HTTPAlert(AlertPlugin):
     version = '0.0.1'
     font_icon = 'fa fa-code'
 
+    @staticmethod
+    def _serialize_check(check):
+        return {
+            'id': check.id,
+            'name': check.name
+        }
+
     def send_alert(self, service, users, duty_officers):
-        message = service.get_status_message()
+
         data = {
             'users': [user.username for user in users],
-            'message': str(message),
+            'failing_checks': [self._serialize_check(c) for c in service.all_failing_checks],
+            'passing_checks': [self._serialize_check(c) for c in service.all_passing_checks],
         }
 
         resp = requests.post(
