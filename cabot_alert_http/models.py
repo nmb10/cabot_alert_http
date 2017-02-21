@@ -24,15 +24,18 @@ class HTTPAlert(AlertPlugin):
     def _serialize_check(check):
         return {
             'id': check.id,
-            'name': check.name
+            'name': check.name,
+            'metric': check.metric,
+            'check_type': check.check_type,
+            'value': check.value
         }
 
     def send_alert(self, service, users, duty_officers):
 
         data = {
             'users': [user.username for user in users],
-            'failing_checks': [self._serialize_check(c) for c in service.all_failing_checks],
-            'passing_checks': [self._serialize_check(c) for c in service.all_passing_checks],
+            'failing_checks': [self._serialize_check(c) for c in service.all_failing_checks()],
+            'passing_checks': [self._serialize_check(c) for c in service.all_passing_checks()],
         }
 
         resp = requests.post(
