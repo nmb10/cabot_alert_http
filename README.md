@@ -4,7 +4,7 @@
 
 Install from github.
 ```bash
-$ pip install <github_url>
+$ pip install https://github.com/nmb10/cabot_alert_http/archive/v1.0.0.tar.gz
 ```
 
 Register in the cabot.
